@@ -1,0 +1,67 @@
+{
+  "main": [
+    {
+      "id": "home",
+      "labelKey": "nav.home",
+      "path": "/",
+      "icon": "home"
+    },
+    {
+      "id": "chat",
+      "labelKey": "nav.chat",
+      "path": "/chat",
+      "icon": "message-square",
+      "highlight": true
+    },
+    {
+      "id": "skills",
+      "labelKey": "nav.skills",
+      "path": "/skills",
+      "icon": "cpu",
+      "dynamic": false
+    },
+    {
+      "id": "docs",
+      "labelKey": "nav.docs",
+      "path": "/docs",
+      "icon": "book-open"
+    },
+    {
+      "id": "features",
+      "labelKey": "nav.features",
+      "path": "/features",
+      "icon": "zap"
+    },
+    {
+      "id": "download",
+      "labelKey": "nav.download",
+      "path": "/download",
+      "icon": "download"
+    }
+  ],
+  "footer": [
+    {
+      "groupKey": "footer.product",
+      "links": [
+        { "labelKey": "nav.features", "path": "/features" },
+        { "labelKey": "nav.chat", "path": "/chat" },
+        { "labelKey": "nav.skills", "path": "/skills" }
+      ]
+    },
+    {
+      "groupKey": "footer.resources",
+      "links": [
+        { "labelKey": "nav.docs", "path": "/docs" },
+        { "labelKey": "nav.changelog", "path": "/changelog" },
+        { "labelKey": "nav.faq", "path": "/support/faq" }
+      ]
+    },
+    {
+      "groupKey": "footer.community",
+      "links": [
+        { "labelKey": "nav.github", "path": "https://github.com/xxx/emcoder-cli", "external": true },
+        { "labelKey": "nav.discord", "path": "https://discord.gg/xxx", "external": true }
+      ]
+    }
+  ]
+}

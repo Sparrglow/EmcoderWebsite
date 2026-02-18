@@ -1,0 +1,41 @@
+{
+  "site": {
+    "name": "EmcoderCLI",
+    "tagline": "AI-Powered Embedded MCU Development Sidecar",
+    "description": "AI assistant for STM32/ESP32 developers with code generation, project management, firmware flashing, and hardware debugging"
+  },
+  "actions": {
+    "tryChat": "Start Chat",
+    "learnMore": "Learn More",
+    "getStarted": "Get Started",
+    "download": "Download",
+    "copy": "Copy",
+    "copied": "Copied",
+    "backToTop": "Back to Top",
+    "viewAll": "View All",
+    "send": "Send",
+    "cancel": "Cancel"
+  },
+  "status": {
+    "loading": "Loading...",
+    "thinking": "Thinking...",
+    "error": "Something went wrong",
+    "empty": "No data",
+    "notFound": "Page Not Found"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "zh": "中文",
+    "en": "English"
+  },
+  "a11y": {
+    "skipToContent": "Skip to main content",
+    "mainNav": "Main navigation",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  }
+}

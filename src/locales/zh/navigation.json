@@ -1,0 +1,20 @@
+{
+  "nav": {
+    "home": "首页",
+    "chat": "AI 对话",
+    "skills": "支持平台",
+    "docs": "文档",
+    "features": "功能特性",
+    "download": "下载",
+    "changelog": "更新日志",
+    "faq": "常见问题",
+    "github": "GitHub",
+    "discord": "Discord"
+  },
+  "footer": {
+    "product": "产品",
+    "resources": "资源",
+    "community": "社区",
+    "copyright": "© {year} EmcoderCLI. All rights reserved."
+  }
+}

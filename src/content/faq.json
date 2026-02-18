@@ -1,0 +1,36 @@
+{
+  "categories": [
+    {
+      "id": "general",
+      "titleKey": "faq.category.general",
+      "items": [
+        {
+          "questionKey": "faq.general.what.q",
+          "answerKey": "faq.general.what.a"
+        },
+        {
+          "questionKey": "faq.general.platforms.q",
+          "answerKey": "faq.general.platforms.a"
+        },
+        {
+          "questionKey": "faq.general.free.q",
+          "answerKey": "faq.general.free.a"
+        }
+      ]
+    },
+    {
+      "id": "technical",
+      "titleKey": "faq.category.technical",
+      "items": [
+        {
+          "questionKey": "faq.technical.install.q",
+          "answerKey": "faq.technical.install.a"
+        },
+        {
+          "questionKey": "faq.technical.offline.q",
+          "answerKey": "faq.technical.offline.a"
+        }
+      ]
+    }
+  ]
+}

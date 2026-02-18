@@ -1,0 +1,26 @@
+{
+  "site": {
+    "name": "EmcoderCLI",
+    "version": "2.0.0",
+    "tagline": {
+      "zh": "嵌入式 MCU 智能开发 AI Sidecar",
+      "en": "AI-Powered Embedded MCU Development Sidecar"
+    },
+    "description": {
+      "zh": "面向 STM32/ESP32 开发者的 AI 智能助手，提供代码生成、工程管理、固件烧录、硬件调试一站式体验",
+      "en": "AI assistant for STM32/ESP32 developers with code generation, project management, firmware flashing, and hardware debugging"
+    }
+  },
+  "brand": {
+    "logo": "/assets/logo.svg",
+    "logoDark": "/assets/logo-dark.svg",
+    "favicon": "/assets/favicon.ico",
+    "primaryColor": "#3B82F6",
+    "accentColor": "#10B981"
+  },
+  "links": {
+    "github": "https://github.com/xxx/emcoder-cli",
+    "documentation": "/docs",
+    "discord": "https://discord.gg/xxx"
+  }
+}

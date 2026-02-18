@@ -1,0 +1,58 @@
+{
+  "skills": {
+    "title": "支持平台",
+    "subtitle": "EmcoderCLI 针对主流 MCU 平台深度优化，提供专属技能包",
+    "stm32": {
+      "title": "STM32",
+      "desc": "面向 STM32 全系列的深度支持，包括 CubeMX 工程保护、HAL 代码生成、ST-Link 烧录与调试",
+      "hero": {
+        "title": "STM32 智能开发",
+        "subtitle": "从工程创建到固件烧录，全流程 AI 辅助"
+      },
+      "features": {
+        "protection": {
+          "title": "CubeMX 工程保护",
+          "desc": "智能识别 CubeMX 自动生成区域，避免覆盖用户代码，确保代码安全"
+        },
+        "hal": {
+          "title": "HAL 代码生成",
+          "desc": "根据需求自动生成符合 HAL 库规范的外设初始化和驱动代码"
+        },
+        "debug": {
+          "title": "调试支持",
+          "desc": "集成 OpenOCD + ST-Link 调试方案，支持断点、单步、变量监控"
+        },
+        "flash": {
+          "title": "固件烧录",
+          "desc": "一键通过 ST-Link 完成固件烧录，支持自动检测芯片型号"
+        }
+      }
+    },
+    "esp32": {
+      "title": "ESP32",
+      "desc": "深度集成 ESP-IDF 开发框架，支持 Wi-Fi/蓝牙配置、OTA 升级、分区管理",
+      "hero": {
+        "title": "ESP32 智能开发",
+        "subtitle": "IoT 开发全链路 AI 加速"
+      },
+      "features": {
+        "idf": {
+          "title": "ESP-IDF 集成",
+          "desc": "深度集成 ESP-IDF 构建系统，自动管理组件依赖和编译配置"
+        },
+        "wireless": {
+          "title": "Wi-Fi/蓝牙配置",
+          "desc": "通过自然语言描述快速生成 Wi-Fi 和蓝牙初始化代码"
+        },
+        "ota": {
+          "title": "OTA 升级",
+          "desc": "自动生成 OTA 升级代码，支持分区表配置和固件版本管理"
+        },
+        "partition": {
+          "title": "分区管理",
+          "desc": "可视化分区表编辑和生成，支持自定义分区布局"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "nav": {
+    "home": "Home",
+    "chat": "AI Chat",
+    "skills": "Platforms",
+    "docs": "Docs",
+    "features": "Features",
+    "download": "Download",
+    "changelog": "Changelog",
+    "faq": "FAQ",
+    "github": "GitHub",
+    "discord": "Discord"
+  },
+  "footer": {
+    "product": "Product",
+    "resources": "Resources",
+    "community": "Community",
+    "copyright": "© {year} EmcoderCLI. All rights reserved."
+  }
+}

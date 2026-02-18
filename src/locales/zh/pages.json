@@ -1,0 +1,129 @@
+{
+  "home": {
+    "hero": {
+      "title": "嵌入式开发的 AI 搭档",
+      "subtitle": "EmcoderCLI 是面向 STM32/ESP32 开发者的命令行 AI 助手，从代码生成到固件烧录，全流程智能辅助",
+      "cta": "开始对话",
+      "secondary": "查看文档"
+    },
+    "highlights": {
+      "title": "为什么选择 EmcoderCLI",
+      "items": {
+        "smart": {
+          "title": "真正理解嵌入式",
+          "desc": "不仅生成代码，更理解寄存器配置、外设依赖和硬件约束"
+        },
+        "safe": {
+          "title": "安全可控",
+          "desc": "CubeMX 工程保护机制，绝不覆盖您的代码"
+        },
+        "fast": {
+          "title": "开箱即用",
+          "desc": "pip install 即可使用，无需复杂配置"
+        },
+        "open": {
+          "title": "开源透明",
+          "desc": "完全开源，社区驱动，持续演进"
+        }
+      }
+    },
+    "platforms": {
+      "title": "支持的平台",
+      "desc": "针对主流 MCU 平台深度优化"
+    },
+    "cta": {
+      "title": "准备好开始了吗？",
+      "desc": "立即安装 EmcoderCLI，体验 AI 驱动的嵌入式开发",
+      "install": "pip install emcoder-cli",
+      "action": "查看安装指南"
+    }
+  },
+  "chat": {
+    "title": "AI 对话",
+    "placeholder": "描述你的嵌入式开发需求...",
+    "welcome": "你好！我是 EmcoderCLI AI 助手，可以帮你生成代码、调试硬件、管理工程。请描述你的需求。",
+    "disclaimer": "AI 生成内容仅供参考，请在使用前验证代码的正确性和安全性。"
+  },
+  "docs": {
+    "title": "文档中心",
+    "subtitle": "从安装到高级用法，全面的使用指南",
+    "gettingStarted": {
+      "title": "快速开始",
+      "desc": "安装、配置和首次使用指南"
+    },
+    "api": {
+      "title": "API 参考",
+      "desc": "完整的命令行接口和编程 API 文档"
+    },
+    "tutorial": {
+      "title": "保姆级教程",
+      "desc": "EmcoderCLI 详细使用手册，从入门到精通"
+    }
+  },
+  "download": {
+    "title": "下载中心",
+    "subtitle": "获取 EmcoderCLI 最新版本",
+    "pip": {
+      "title": "通过 pip 安装（推荐）",
+      "command": "pip install emcoder-cli"
+    },
+    "source": {
+      "title": "从源码安装",
+      "command": "git clone https://github.com/xxx/emcoder-cli.git"
+    },
+    "requirements": {
+      "title": "系统要求",
+      "python": "Python 3.10+",
+      "os": "Windows / macOS / Linux"
+    }
+  },
+  "changelog": {
+    "title": "更新日志",
+    "subtitle": "了解每个版本的变更内容"
+  },
+  "support": {
+    "title": "服务支持",
+    "subtitle": "获取帮助和解答疑问"
+  },
+  "faq": {
+    "title": "常见问题",
+    "category": {
+      "general": "常规问题",
+      "technical": "技术问题"
+    },
+    "general": {
+      "what": {
+        "q": "EmcoderCLI 是什么？",
+        "a": "EmcoderCLI 是一个面向嵌入式 MCU 开发者的命令行 AI 助手，提供代码生成、工程管理、固件烧录和硬件调试等功能。"
+      },
+      "platforms": {
+        "q": "支持哪些 MCU 平台？",
+        "a": "目前支持 STM32 全系列和 ESP32 系列，更多平台持续适配中。"
+      },
+      "free": {
+        "q": "EmcoderCLI 是免费的吗？",
+        "a": "EmcoderCLI 核心功能完全免费开源，您可以自由使用和贡献。"
+      }
+    },
+    "technical": {
+      "install": {
+        "q": "如何安装 EmcoderCLI？",
+        "a": "使用 pip install emcoder-cli 即可安装，需要 Python 3.10+ 环境。"
+      },
+      "offline": {
+        "q": "是否支持离线使用？",
+        "a": "部分功能（如工程管理、烧录）支持离线使用，AI 对话和代码生成功能需要网络连接。"
+      }
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "message": "抱歉，你访问的页面不存在",
+    "back": "返回首页"
+  },
+  "tutorial": {
+    "title": "保姆级教程",
+    "subtitle": "EmcoderCLI 详细使用指南",
+    "contentNotFound": "教程内容加载失败"
+  }
+}

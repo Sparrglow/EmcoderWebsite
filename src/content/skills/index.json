@@ -1,0 +1,16 @@
+{
+  "skills": [
+    {
+      "id": "stm32",
+      "status": "stable",
+      "featured": true,
+      "order": 1
+    },
+    {
+      "id": "esp32",
+      "status": "stable",
+      "featured": true,
+      "order": 2
+    }
+  ]
+}

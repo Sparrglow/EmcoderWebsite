@@ -1,0 +1,38 @@
+{
+  "id": "stm32",
+  "meta": {
+    "titleKey": "skills.stm32.title",
+    "descriptionKey": "skills.stm32.desc"
+  },
+  "hero": {
+    "titleKey": "skills.stm32.hero.title",
+    "subtitleKey": "skills.stm32.hero.subtitle",
+    "image": "/assets/skills/stm32-hero.svg"
+  },
+  "features": [
+    {
+      "id": "cube-mx-protection",
+      "icon": "shield-check",
+      "titleKey": "skills.stm32.features.protection.title",
+      "descriptionKey": "skills.stm32.features.protection.desc"
+    },
+    {
+      "id": "hal-generation",
+      "icon": "code",
+      "titleKey": "skills.stm32.features.hal.title",
+      "descriptionKey": "skills.stm32.features.hal.desc"
+    },
+    {
+      "id": "debug-support",
+      "icon": "bug",
+      "titleKey": "skills.stm32.features.debug.title",
+      "descriptionKey": "skills.stm32.features.debug.desc"
+    },
+    {
+      "id": "flash-support",
+      "icon": "upload",
+      "titleKey": "skills.stm32.features.flash.title",
+      "descriptionKey": "skills.stm32.features.flash.desc"
+    }
+  ]
+}

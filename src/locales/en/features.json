@@ -1,0 +1,53 @@
+{
+  "features": {
+    "title": "Features",
+    "subtitle": "A powerful AI assistant for embedded development, empowering your entire workflow",
+    "agent": {
+      "title": "AI Agent",
+      "desc": "An intelligent agent powered by LLMs that understands your embedded development needs and automatically completes complex tasks like code generation and debug diagnostics",
+      "capabilities": {
+        "chat": {
+          "title": "Natural Language Interaction",
+          "desc": "Converse with the AI Agent in natural language — describe your development needs and receive precise code solutions and technical recommendations"
+        },
+        "codegen": {
+          "title": "Code Generation & Completion",
+          "desc": "Automatically generate HAL/IDF-compliant embedded C code covering peripheral initialization, interrupt handling, communication protocols, and more"
+        },
+        "cli": {
+          "title": "CLI Integration",
+          "desc": "Deep CLI toolchain integration supporting end-to-end automation of project creation, compilation, flashing, and debugging"
+        },
+        "hardware": {
+          "title": "Hardware Awareness",
+          "desc": "Automatically detect target chip models and peripheral configurations to generate optimal code and settings matched to your hardware"
+        }
+      }
+    },
+    "skills": {
+      "title": "Skill System",
+      "desc": "Extensible platform skill modules providing specialized support for different embedded platforms",
+      "intro": "EmcoderCLI supports multiple embedded platforms through pluggable skill modules. Each skill module includes platform-specific code generation templates, project management rules, and hardware debug configurations."
+    },
+    "codeGen": {
+      "title": "Smart Code Generation",
+      "desc": "Automatically generate HAL/IDF-compliant embedded C code from natural language descriptions, supporting peripheral initialization, interrupt handling, and more"
+    },
+    "projectMgmt": {
+      "title": "Project Management",
+      "desc": "Automatically identify project structure, manage dependencies, and provide intelligent operations for CubeMX/ESP-IDF projects"
+    },
+    "flash": {
+      "title": "Firmware Flashing",
+      "desc": "One-click firmware flashing to target chips, supporting ST-Link, J-Link, ESP download tools, and more"
+    },
+    "debug": {
+      "title": "Hardware Debugging",
+      "desc": "Integrated OpenOCD/GDB debugging toolchain with breakpoints, variable monitoring, and register inspection"
+    },
+    "serial": {
+      "title": "Serial Monitor",
+      "desc": "Real-time serial data monitoring with filtering, formatted display, and logging"
+    }
+  }
+}

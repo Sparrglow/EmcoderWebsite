@@ -1,0 +1,101 @@
+/* ============================================================
+ * EmcoderCLI Website - Design Tokens (规范 §7)
+ * 商务像素风设计系统 - CSS 自定义属性
+ * ============================================================ */
+
+:root {
+  /* ---- 主色 - 低饱和蓝色，专业科技感 ---- */
+  --color-primary: #3B82F6;
+  --color-primary-dark: #2563EB;
+  --color-primary-light: #60A5FA;
+
+  /* ---- 强调色 - 低饱和绿色 ---- */
+  --color-accent: #10B981;
+  --color-accent-dark: #059669;
+
+  /* ---- 中性色 ---- */
+  --color-white: #FFFFFF;
+  --color-background: #FAFAFA;
+  --color-surface: #F5F5F5;
+  --color-border: #E5E5E5;
+  --color-text-muted: #737373;
+  --color-text: #171717;
+  --color-black: #0A0A0A;
+
+  /* ---- 语义色 ---- */
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+  --color-success: #10B981;
+  --color-info: #3B82F6;
+
+  /* ---- 字体 (规范 §7.4) ---- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ---- 间距系统 - 4px 基准 (规范 §7.4) ---- */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+
+  /* ---- 字号系统 (规范 §7.4) ---- */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  /* ---- 字重 ---- */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ---- 行高 ---- */
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* ---- 断点 (规范 §7.7) ---- */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* ---- 内容最大宽度 ---- */
+  --max-width-content: 1200px;
+  --max-width-narrow: 800px;
+
+  /* ---- 像素风阴影 (规范 §7.6: 细颗粒度优化 - 1px 精细硬阴影) ---- */
+  /* 修正：拒绝大块状阴影，使用 1px 极简硬边，体现"高保真"而非"复古游戏" */
+  --shadow-pixel: 1px 1px 0 0 var(--color-border);
+  --shadow-pixel-primary: 1px 1px 0 0 var(--color-primary-dark);
+  --shadow-pixel-hover: 2px 2px 0 0 var(--color-border); /* Hover 时稍微浮起 */
+
+  /* ---- 过渡 ---- */
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.2s ease;
+}
+
+/* ---- 暗色模式 (规范 §7.3) ---- */
+[data-theme="dark"] {
+  --color-background: #0A0A0A;
+  --color-surface: #171717;
+  --color-border: #333333; /* 提升对比度 */
+  --color-text-muted: #A3A3A3;
+  --color-text: #FAFAFA;
+  --color-white: #FAFAFA;
+  /* 注意：在暗色模式下，--color-black 仍然是黑色的，不应作为文本颜色 */
+  --color-black: #000000;
+
+  --shadow-pixel: 1px 1px 0 0 var(--color-border);
+  --shadow-pixel-primary: 1px 1px 0 0 var(--color-primary);
+  --shadow-pixel-hover: 2px 2px 0 0 var(--color-border);
+}

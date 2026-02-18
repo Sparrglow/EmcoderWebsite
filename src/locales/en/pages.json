@@ -1,0 +1,125 @@
+{
+  "home": {
+    "hero": {
+      "title": "Your AI Partner for Embedded Development",
+      "subtitle": "EmcoderCLI is a command-line AI assistant for STM32/ESP32 developers, providing intelligent assistance from code generation to firmware flashing",
+      "cta": "Start Chat",
+      "secondary": "View Docs"
+    },
+    "highlights": {
+      "title": "Why EmcoderCLI",
+      "items": {
+        "smart": {
+          "title": "Truly Understands Embedded",
+          "desc": "Not just code generation — understands register configs, peripheral dependencies, and hardware constraints"
+        },
+        "safe": {
+          "title": "Safe & Controllable",
+          "desc": "CubeMX project protection ensures your code is never overwritten"
+        },
+        "fast": {
+          "title": "Ready Out of the Box",
+          "desc": "Just pip install and start — no complex configuration needed"
+        },
+        "open": {
+          "title": "Open Source",
+          "desc": "Fully open source, community-driven, continuously evolving"
+        }
+      }
+    },
+    "platforms": {
+      "title": "Supported Platforms",
+      "desc": "Deeply optimized for mainstream MCU platforms"
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "desc": "Install EmcoderCLI now and experience AI-powered embedded development",
+      "install": "pip install emcoder-cli",
+      "action": "View Installation Guide"
+    }
+  },
+  "chat": {
+    "title": "AI Chat",
+    "placeholder": "Describe your embedded development needs...",
+    "welcome": "Hi! I'm the EmcoderCLI AI assistant. I can help you generate code, debug hardware, and manage projects. Describe your needs.",
+    "disclaimer": "AI-generated content is for reference only. Please verify code correctness and safety before use."
+  },
+  "docs": {
+    "title": "Documentation",
+    "subtitle": "Comprehensive guides from installation to advanced usage",
+    "gettingStarted": {
+      "title": "Getting Started",
+      "desc": "Installation, configuration, and first-use guide"
+    },
+    "api": {
+      "title": "API Reference",
+      "desc": "Complete CLI and programming API documentation"
+    }
+  },
+  "download": {
+    "title": "Download",
+    "subtitle": "Get the latest version of EmcoderCLI",
+    "pip": {
+      "title": "Install via pip (Recommended)",
+      "command": "pip install emcoder-cli"
+    },
+    "source": {
+      "title": "Install from Source",
+      "command": "git clone https://github.com/xxx/emcoder-cli.git"
+    },
+    "requirements": {
+      "title": "System Requirements",
+      "python": "Python 3.10+",
+      "os": "Windows / macOS / Linux"
+    }
+  },
+  "changelog": {
+    "title": "Changelog",
+    "subtitle": "See what's new in each version"
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "Get help and answers"
+  },
+  "faq": {
+    "title": "FAQ",
+    "category": {
+      "general": "General",
+      "technical": "Technical"
+    },
+    "general": {
+      "what": {
+        "q": "What is EmcoderCLI?",
+        "a": "EmcoderCLI is a command-line AI assistant for embedded MCU developers, providing code generation, project management, firmware flashing, and hardware debugging."
+      },
+      "platforms": {
+        "q": "Which MCU platforms are supported?",
+        "a": "Currently supports the full STM32 series and ESP32 series, with more platforms being added continuously."
+      },
+      "free": {
+        "q": "Is EmcoderCLI free?",
+        "a": "EmcoderCLI core features are completely free and open source. You can freely use and contribute."
+      }
+    },
+    "technical": {
+      "install": {
+        "q": "How to install EmcoderCLI?",
+        "a": "Use pip install emcoder-cli to install. Requires Python 3.10+ environment."
+      },
+      "offline": {
+        "q": "Does it support offline use?",
+        "a": "Some features (project management, flashing) work offline. AI chat and code generation require network connectivity."
+      }
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Sorry, the page you're looking for doesn't exist",
+    "back": "Back to Home"
+  },
+  "tutorial": {
+    "title": "Step-by-Step Guide",
+    "subtitle": "Detailed User Manual for EmcoderCLI",
+    "contentNotFound": "Tutorial content not found"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "skills": {
+    "title": "Supported Platforms",
+    "subtitle": "EmcoderCLI is deeply optimized for mainstream MCU platforms with dedicated skill packs",
+    "stm32": {
+      "title": "STM32",
+      "desc": "Deep support for the entire STM32 family, including CubeMX project protection, HAL code generation, ST-Link flashing and debugging",
+      "hero": {
+        "title": "STM32 Smart Development",
+        "subtitle": "AI-assisted from project creation to firmware flashing"
+      },
+      "features": {
+        "protection": {
+          "title": "CubeMX Project Protection",
+          "desc": "Intelligently identifies CubeMX auto-generated regions to prevent overwriting user code"
+        },
+        "hal": {
+          "title": "HAL Code Generation",
+          "desc": "Automatically generates peripheral initialization and driver code compliant with HAL library standards"
+        },
+        "debug": {
+          "title": "Debug Support",
+          "desc": "Integrated OpenOCD + ST-Link debugging with breakpoints, stepping, and variable monitoring"
+        },
+        "flash": {
+          "title": "Firmware Flashing",
+          "desc": "One-click firmware flashing via ST-Link with automatic chip detection"
+        }
+      }
+    },
+    "esp32": {
+      "title": "ESP32",
+      "desc": "Deep ESP-IDF integration with Wi-Fi/Bluetooth configuration, OTA updates, and partition management",
+      "hero": {
+        "title": "ESP32 Smart Development",
+        "subtitle": "AI-accelerated IoT development across the full chain"
+      },
+      "features": {
+        "idf": {
+          "title": "ESP-IDF Integration",
+          "desc": "Deep integration with ESP-IDF build system, automatic component dependency and build configuration management"
+        },
+        "wireless": {
+          "title": "Wi-Fi/Bluetooth Config",
+          "desc": "Quickly generate Wi-Fi and Bluetooth initialization code through natural language"
+        },
+        "ota": {
+          "title": "OTA Updates",
+          "desc": "Auto-generate OTA update code with partition table configuration and firmware version management"
+        },
+        "partition": {
+          "title": "Partition Management",
+          "desc": "Visual partition table editing and generation with custom partition layout support"
+        }
+      }
+    }
+  }
+}

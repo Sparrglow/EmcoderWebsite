@@ -1,0 +1,16 @@
+{
+  "sections": [
+    {
+      "id": "getting-started",
+      "titleKey": "docs.gettingStarted.title",
+      "descriptionKey": "docs.gettingStarted.desc",
+      "path": "/docs/getting-started"
+    },
+    {
+      "id": "api",
+      "titleKey": "docs.api.title",
+      "descriptionKey": "docs.api.desc",
+      "path": "/docs/api"
+    }
+  ]
+}

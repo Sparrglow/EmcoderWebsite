@@ -1,0 +1,41 @@
+{
+  "site": {
+    "name": "EmcoderCLI",
+    "tagline": "嵌入式 MCU 智能开发 AI Sidecar",
+    "description": "面向 STM32/ESP32 开发者的 AI 智能助手，提供代码生成、工程管理、固件烧录、硬件调试一站式体验"
+  },
+  "actions": {
+    "tryChat": "开始对话",
+    "learnMore": "了解更多",
+    "getStarted": "快速开始",
+    "download": "下载",
+    "copy": "复制",
+    "copied": "已复制",
+    "backToTop": "返回顶部",
+    "viewAll": "查看全部",
+    "send": "发送",
+    "cancel": "取消"
+  },
+  "status": {
+    "loading": "加载中...",
+    "thinking": "思考中...",
+    "error": "出错了",
+    "empty": "暂无数据",
+    "notFound": "页面未找到"
+  },
+  "theme": {
+    "light": "浅色模式",
+    "dark": "深色模式",
+    "system": "跟随系统"
+  },
+  "language": {
+    "zh": "中文",
+    "en": "English"
+  },
+  "a11y": {
+    "skipToContent": "跳转到主要内容",
+    "mainNav": "主导航",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单"
+  }
+}
