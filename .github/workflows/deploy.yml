@@ -7,31 +7,38 @@ on:
 permissions:
   contents: write
 
-env:
-  WEBHOOK_URL: https://webhook.nspar.ink/hooks/deploy-site
-  WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           persist-credentials: true
-      - uses: actions/setup-node@v4
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm ci
-      - run: npm run build
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
       - name: Push to dist-branch
         run: |
+          cd dist
+          git init
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git checkout --orphan dist-branch
-          git rm -rf .
-          cp -r dist/* .
           git add .
           git commit -m "Build from ${{ github.sha }}"
+          git branch -M dist-branch
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push -f origin dist-branch
 
   notify:
@@ -39,10 +46,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger webhook
+        env:
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
         run: |
           PAYLOAD='{"ref":"refs/heads/dist-branch"}'
           SIG=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | sed 's/.*= //')
-          curl -X POST "$WEBHOOK_URL" \
+          curl -X POST "https://webhook.nspar.ink/hooks/deploy-site" \
             -H "Content-Type: application/json" \
             -H "X-Hub-Signature-256: sha256=$SIG" \
             -d "$PAYLOAD"
