@@ -43,8 +43,8 @@ jobs:
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
         run: |
           PAYLOAD='{"ref":"refs/heads/dist-branch"}'
-          SIG=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | sed 's/.*= //')
+          SIGNATURE=$(printf '%s' "$PAYLOAD" | openssl sha256 -hmac "$WEBHOOK_SECRET" | awk '{print $2}')
           curl -X POST "https://webhook.nspar.ink/hooks/deploy-site" \
             -H "Content-Type: application/json" \
-            -H "X-Hub-Signature-256: sha256=$SIG" \
+            -H "X-Hub-Signature-256: sha256=$SIGNATURE" \
             -d "$PAYLOAD"
