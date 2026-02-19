@@ -1,8 +1,8 @@
-# Emcoder CLI v2.0 — User Manual (Step-by-Step Guide)
+# Emcoder CLI v2.1 — User Manual (Step-by-Step Guide)
 
 Embedded MCU Intelligent Development AI Agent System. Integrates AI Chat, Code Generation, Knowledge Retrieval, Serial Communication, Firmware Flashing, Hardware Debugging, and QEMU Simulation. Provides **CLI / TUI / REST API / WebSocket** four interaction modes.
 
-> Last Updated: 2026-02-15
+> Last Updated: 2026-02-20
 
 ---
 
@@ -41,7 +41,7 @@ Emcoder is an **AI Sidecar Service** for embedded MCU development. It runs as a 
 
 | Capability | Description |
 |---|---|
-| AI Chat | Multi-turn reasoning based on Agent Loop (Think → Act → Observe → Repeat), supporting 14 tool calls |
+| AI Chat | Multi-turn reasoning based on Agent Loop (Think → Act → Observe → Repeat), supporting 27 tool calls (19 built-in + 8 LLM providers) |
 | Code Generation | Generate embedded C code complying with HAL/LL/ESP-IDF specifications |
 | Knowledge Retrieval (RAG) | FAISS vector index + Incremental RAG, built-in STM32/ESP32 knowledge base |
 | Skill Plugins | Extensible platform skill system, auto-discovery, lazy loading, keyword + semantic matching |
@@ -1281,26 +1281,81 @@ User Message
 Final Answer → User
 ```
 
-### 9.2 All 14 Tools
+### 9.2 Tool System Architecture
 
-| Tool Name | Category | Risk Level | Description |
-|---|---|---|---|
-| `search_knowledge` | KNOWLEDGE | LOW | Search embedded dev knowledge in RAG base |
-| `generate_code` | CODE | LOW | Call LLM to generate embedded C code |
-| `read_file` | FILE | LOW | Read workspace file (Sandbox + 5MB limit) |
-| `write_file` | FILE | MEDIUM | Create or overwrite file (Sandbox + 10MB limit) |
-| `edit_file` | FILE | MEDIUM | Find and replace/modify partial file content |
-| `scan_workspace` | WORKSPACE | LOW | Scan workspace directory structure (Max 200 files) |
-| `search_in_project` | WORKSPACE | LOW | Search text content in project files |
-| `create_project` | PROJECT | MEDIUM | Create STM32 / ESP32 project |
-| `build_project` | PROJECT | MEDIUM | Build project (debug / release) |
-| `detect_platform` | PROJECT | LOW | Auto detect target platform from context |
-| `run_command` | TERMINAL | **CRITICAL** | Execute terminal command (Confirm required) |
-| `flash_firmware` | HARDWARE | **CRITICAL** | Flash firmware to hardware (Confirm required) |
-| `get_peripheral_info` | HARDWARE | LOW | Query peripheral configuration info |
-| `request_confirmation` | WORKSPACE | LOW | Initiate confirmation request to user |
+Tools are categorized by **source** into two major types, distinguished by `ToolSource` enum:
 
-#### Tool Parameter Details
+| Source | Description | Count |
+|---|---|---|
+| `BUILTIN` | Built-in tools — Execute locally, direct file/hardware/project operations | 19 |
+| `LLM` | LLM Provider tools — Delegate to remote LLM execution (search, code execution, etc.) | 8 |
+
+Tool definitions located in `app/services/agent/tools/` package, organized by function modules:
+
+```
+tools/
+├── base.py              Type definitions (ToolDefinition, ToolParam, RiskLevel, ToolCategory, ToolSource)
+├── registry.py          ToolRegistry class + tool_registry singleton
+├── _helpers.py          Shared tool functions
+├── __init__.py          Unified entry + register_all_tools()
+├── builtin/             Built-in tools (10 modules, 19 tools)
+│   ├── knowledge.py       Knowledge retrieval & code generation
+│   ├── file_ops.py        File read/write/edit
+│   ├── workspace.py       Workspace scan & search
+│   ├── project.py         Project create/build/detect
+│   ├── terminal.py        Terminal commands
+│   ├── hardware.py        Flash & peripherals
+│   ├── serial.py          Serial monitor & logs
+│   ├── debug.py           Hardware detect & debug control
+│   ├── emulation.py       QEMU simulation control
+│   └── interaction.py     User confirmation
+└── llm/                 LLM Provider tools (4 modules, 8 tools)
+    ├── openai.py          Search / File Search / Code Exec / Image Gen
+    ├── qwen.py            Knowledge retrieve / Web search
+    ├── deepseek.py        Web search
+    └── anthropic.py       Computer use
+```
+
+### 9.3 Built-in Tools (19)
+
+| Tool Name | Module | Category | Risk Level | Description |
+|---|---|---|---|---|
+| `search_knowledge` | knowledge | KNOWLEDGE | LOW | Search embedded dev knowledge in RAG base |
+| `generate_code` | knowledge | CODE | LOW | Call LLM to generate embedded C code |
+| `read_file` | file_ops | FILE | LOW | Read workspace file (Sandbox + 5MB limit) |
+| `write_file` | file_ops | FILE | MEDIUM | Create or overwrite file (Sandbox + 10MB limit) |
+| `edit_file` | file_ops | FILE | MEDIUM | Find and replace/modify partial file content |
+| `scan_workspace` | workspace | WORKSPACE | LOW | Scan workspace directory structure (Max 200 files) |
+| `search_in_project` | workspace | WORKSPACE | LOW | Search text content in project files |
+| `create_project` | project | PROJECT | MEDIUM | Create STM32 / ESP32 project |
+| `build_project` | project | PROJECT | MEDIUM | Build project (debug / release) |
+| `detect_platform` | project | PROJECT | LOW | Auto detect target platform from context |
+| `run_command` | terminal | TERMINAL | **CRITICAL** | Execute terminal command (Confirm required) |
+| `flash_firmware` | hardware | HARDWARE | **CRITICAL** | Flash firmware to hardware (Confirm required) |
+| `get_peripheral_info` | hardware | HARDWARE | LOW | Query peripheral configuration info |
+| `serial_monitor` | serial | HARDWARE | MEDIUM | Serial monitor — connect / stop / view status |
+| `get_serial_log` | serial | HARDWARE | LOW | Get serial logs processed by Filter+Sampler |
+| `detect_hardware` | debug | HARDWARE | LOW | Auto detect serial ports, debug probes, board types |
+| `debug_control` | debug | HARDWARE | **CRITICAL** | OpenOCD debug — start/stop/halt/step/read registers/breakpoints |
+| `emulation_control` | emulation | HARDWARE | MEDIUM | QEMU simulation — start/stop/get output |
+| `request_confirmation` | interaction | WORKSPACE | LOW | Initiate confirmation request to user |
+
+### 9.4 LLM Provider Tools (8)
+
+LLM tool names are prefixed with **provider prefix** (e.g., `openai_`, `qwen_`) to avoid cross-provider naming conflicts. These tools are delegated to the corresponding provider's API via `LLMService.call_llm_tool()`.
+
+| Tool Name | Provider | Category | Risk Level | Description |
+|---|---|---|---|---|
+| `openai_web_search` | OpenAI | KNOWLEDGE | LOW | Web search using OpenAI Responses API |
+| `openai_file_search` | OpenAI | KNOWLEDGE | LOW | Search file content in OpenAI vector store |
+| `openai_code_interpreter` | OpenAI | CODE | MEDIUM | Execute Python code in OpenAI isolated sandbox |
+| `openai_image_generation` | OpenAI | CODE | LOW | Generate images using DALL-E |
+| `qwen_knowledge_retrieve` | Qwen | KNOWLEDGE | LOW | Retrieve info from Bailian knowledge base |
+| `qwen_enable_search` | Qwen | KNOWLEDGE | LOW | Enable Qwen web search |
+| `deepseek_enable_search` | DeepSeek | KNOWLEDGE | LOW | Enable DeepSeek model web search |
+| `anthropic_computer_use` | Anthropic | TERMINAL | **CRITICAL** | Use Claude to control mouse/keyboard for screen interaction |
+
+#### Key Built-in Tool Parameter Details
 
 **search_knowledge**:
 | Parameter | Type | Required | Default | Description |
@@ -1332,6 +1387,38 @@ Final Answer → User
 | `port` | str | No | — | Serial port |
 | `interface` | str | No | `swd` | Interface type: `swd` / `jtag` / `uart` |
 
+**serial_monitor**:
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `action` | str | Yes | — | Action type: `start` / `stop` / `status` |
+| `port` | str | No | — | Serial port (required for start) |
+| `baudrate` | int | No | `115200` | Baud rate |
+| `session_id` | str | No | — | Session ID (required for stop) |
+
+**get_serial_log**:
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `count` | int | No | `30` | Log entry count (1 ~ 200) |
+| `errors_only` | bool | No | `false` | Return only error/critical level |
+
+**debug_control**:
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `action` | str | Yes | — | Action: `start` / `stop` / `halt` / `resume` / `step` / `reset` / `read_registers` / `read_memory` / `set_breakpoint` / `remove_breakpoint` / `list_sessions` / `history` |
+| `session_id` | str | No | — | Debug session ID |
+| `interface_cfg` | str | No | `interface/stlink.cfg` | OpenOCD interface config file |
+| `target_cfg` | str | No | `target/stm32f1x.cfg` | OpenOCD target chip config |
+| `address` | str | No | — | Memory/breakpoint address (0x...) |
+| `size` | int | No | `256` | Memory read bytes |
+
+**emulation_control**:
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `action` | str | Yes | — | Action: `start` / `stop` / `output` / `list_sessions` |
+| `session_id` | str | No | — | Simulation session ID |
+| `firmware` | str | No | — | Firmware ELF file path (required for start) |
+| `machine` | str | No | `stm32f4-discovery` | QEMU machine type |
+
 **search_in_project**:
 | Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
@@ -1340,17 +1427,17 @@ Final Answer → User
 | `project_path` | str | No | — | Project path |
 | `max_results` | int | No | `20` | Max results |
 
-### 9.3 Sensitive Operation Interception
+### 9.5 Sensitive Operation Interception
 
 The following operations trigger user confirmation requests:
 
-1. Tool calls with **Risk Level ≥ CRITICAL** (`run_command`, `flash_firmware`)
+1. Tool calls with **Risk Level ≥ CRITICAL** (`run_command`, `flash_firmware`, `debug_control`, `anthropic_computer_use`)
 2. **Terminal Command Keyword Matching**: `rm -rf`, `flash`, `sudo`, `mkfs`, `dd`, `format`, `reboot`, `shutdown`, `kill`, `chmod 777`, `curl | sh`, `wget | sh`, `erase`
 3. **All Flashing Operations**
 
 Confirmation window auto-rejects after **300 seconds** timeout.
 
-### 9.4 Context Management
+### 9.6 Context Management
 
 | Parameter | Value |
 |---|---|
@@ -1360,7 +1447,7 @@ Confirmation window auto-rejects after **300 seconds** timeout.
 | Session TTL | 4 Hours |
 | Knowledge Cache | LRU + TTL, reduce repetitive RAG retrieval |
 
-### 9.5 Error Recovery Strategy
+### 9.7 Error Recovery Strategy
 
 Auto recovery when Agent tool execution fails:
 
@@ -1369,7 +1456,7 @@ Auto recovery when Agent tool execution fails:
 3. **LLM Re-plan**: Let AI decide again
 4. **Give Up**: Report error to user
 
-### 9.6 Security Features
+### 9.8 Security Features
 
 - **Rate Limit**: Agent call 30/min, Tool call 100/min
 - **Concurrency Limit**: Max 5 concurrent Agents (`asyncio.Semaphore`)
@@ -1378,19 +1465,18 @@ Auto recovery when Agent tool execution fails:
 - **Sensitive Command Interception**: `SensitiveGuard` module
 - **Audit Log**: Ring buffer, max 10,000 entries
 
-### 9.7 Agent Sub-modules
+### 9.9 Agent Sub-modules
 
 | Module | File | Responsibility |
 |---|---|---|
 | Core Loop | `agent_loop.py` | Think → Act → Observe Loop |
-| Tool Registry | `tool_registry.py` | ToolDefinition / RiskLevel / ToolCategory |
-| Tool Definition | `tools_def.py` | 14 Tool Handler functions + Registration |
+| Tool System | `tools/` | Modular toolkit — types, registry, 19 built-in + 8 LLM tools |
 | Sensitive Guard | `sensitive_guard.py` | Command Interception + Confirmation Generation |
 | Context Manager | `context_manager.py` | Token Window + Auto Summary |
 | Workspace Manager | `workspace_manager.py` | Path Injection + Sandbox |
 | Knowledge Cache | `knowledge_cache.py` | LRU + TTL Cache |
 | Output Parsing | `structured_output.py` | System Prompt + Output Parsing |
-| Status Report | `status_reporter.py` | SSE Event Push |
+| Status Reporter | `status_reporter.py` | SSE Event Push |
 | Error Recovery | `error_recovery.py` | Auto Retry + Degrade |
 
 ---
@@ -2263,7 +2349,7 @@ async def test_agent_chat():
   (aiohttp SSE)  (aiohttp SSE)          |
        |              |                   |
 ==========================================================
-          FastAPI Sidecar Engine (v2.0)
+          FastAPI Sidecar Engine (v2.1)
 ==========================================================
   LifecycleManager (Process Control + Signals + Handshake)
   WebSocketManager (Event Bus + Subscriptions + Heartbeat)
@@ -2276,7 +2362,12 @@ async def test_agent_chat():
   ----------------------------------------------------------
   Services
     AgentLoop        — AI Agent Core Loop
-      ToolRegistry   — Tool Registry Center
+      tools/         — Modular toolkit
+        base.py      — Type definitions (ToolDefinition, RiskLevel, ToolCategory, ToolSource)
+        registry.py  — ToolRegistry tool registry center
+        _helpers.py  — Shared tool functions
+        builtin/     — 19 built-in tools (10 modules)
+        llm/         — 8 LLM provider tools (4 modules)
       SensitiveGuard — Sensitive Operation Guard
       ContextManager — Chat Context (Token Window)
       WorkspaceManager — Workspace Path Injection
@@ -2368,7 +2459,7 @@ Unified format for all API returns:
 | Item | Value |
 |---|---|
 | title | `Emcoder Sidecar Engine` |
-| version | `2.0.0` |
+| version | `2.1.0` |
 | Swagger UI | `/docs` |
 | ReDoc | `/redoc` |
 | CORS | All methods, All headers, credentials=true |
@@ -2550,7 +2641,35 @@ EmcoderCLI/
     │   │   ├── schemas.py      API Data Models
     │   │   └── edit_protocol.py  Edit Protocol Models
     │   ├── services/
-    │   │   ├── agent/          Agent System (10 Modules)
+    │   │   ├── agent/          Agent System
+    │   │   │   ├── agent_loop.py       Core Loop
+    │   │   │   ├── sensitive_guard.py   Sensitive Operation Guard
+    │   │   │   ├── context_manager.py   Context Management
+    │   │   │   ├── workspace_manager.py Workspace Management
+    │   │   │   ├── knowledge_cache.py   Knowledge Cache
+    │   │   │   ├── structured_output.py Output Parsing
+    │   │   │   ├── status_reporter.py   SSE Push
+    │   │   │   ├── error_recovery.py    Error Recovery
+    │   │   │   └── tools/              Tool System Package
+    │   │   │       ├── base.py           Type definitions (ToolDefinition, RiskLevel...)
+    │   │   │       ├── registry.py       ToolRegistry + singleton
+    │   │   │       ├── _helpers.py       Shared tool functions
+    │   │   │       ├── builtin/          Built-in tools (10 modules, 19 tools)
+    │   │   │       │   ├── knowledge.py    Knowledge retrieval & code generation
+    │   │   │       │   ├── file_ops.py     Read/Write/Edit files
+    │   │   │       │   ├── workspace.py    Scan & Search
+    │   │   │       │   ├── project.py      Create/Build/Detect
+    │   │   │       │   ├── terminal.py     Terminal commands
+    │   │   │       │   ├── hardware.py     Flash & Peripherals
+    │   │   │       │   ├── serial.py       Serial monitor & logs
+    │   │   │       │   ├── debug.py        Hardware detect & debug
+    │   │   │       │   ├── emulation.py    QEMU simulation
+    │   │   │       │   └── interaction.py  User confirmation
+    │   │   │       └── llm/              LLM Provider tools (4 modules, 8 tools)
+    │   │   │           ├── openai.py       Search/File/Code/Image
+    │   │   │           ├── qwen.py         Knowledge base/Search
+    │   │   │           ├── deepseek.py     Search
+    │   │   │           └── anthropic.py    Computer use
     │   │   ├── llm/            LLM Call
     │   │   ├── rag/            RAG KB
     │   │   ├── project/        Project Mgmt
@@ -2647,9 +2766,10 @@ curl http://127.0.0.1:8000/api/v1/agent/tools
 
 | Version | Date | Major Changes |
 |---|---|---|
-| v2.0.0 | 2026-02 | Skill Plugin System, Edit Protocol, Agent 14 Tools, TUI Refactor |
+| v2.1.0 | 2026-02-20 | Tool system modular refactoring: split into `tools/` package (20 files), added ToolSource enum, LLM provider tools (8), `_helpers.py` shared functions, total tools 19→27 |
+| v2.0.0 | 2026-02 | Skill Plugin System, Edit Protocol, Agent Tool System, TUI Refactor |
 | v1.0.0 | — | Initial Release |
 
 ---
 
-*Emcoder CLI v2.0.0 — Embedded MCU Intelligent Development Sidecar Engine*
+*Emcoder CLI v2.1.0 — Embedded MCU Intelligent Development Sidecar Engine*

@@ -1,8 +1,8 @@
-# Emcoder CLI v2.0 — 使用说明书（保姆级）
+﻿# Emcoder CLI v2.1 — 使用说明书（保姆级）
 
 嵌入式 MCU 智能开发 AI Agent 系统。集 AI 对话、代码生成、知识检索、串口通信、固件烧录、硬件调试、QEMU 仿真于一体，提供 **CLI / TUI / REST API / WebSocket** 四种交互方式。
 
-> 最后更新：2026-02-15
+> 最后更新：2026-02-20
 
 ---
 
@@ -41,7 +41,7 @@ Emcoder 是一个面向嵌入式 MCU 开发的 **AI Sidecar 服务**。它以后
 
 | 能力 | 说明 |
 |------|------|
-| AI 对话 | 基于 Agent Loop（Think → Act → Observe → Repeat）的多轮推理，支持 14 种工具调用 |
+| AI 对话 | 基于 Agent Loop（Think → Act → Observe → Repeat）的多轮推理，支持 27 种工具调用（19 内置 + 8 LLM 提供商） |
 | 代码生成 | 生成符合 HAL/LL/ESP-IDF 规范的嵌入式 C 代码 |
 | 知识检索 (RAG) | FAISS 向量索引 + 增量 RAG，内置 STM32/ESP32 知识库 |
 | Skill 插件 | 可扩展的平台技能系统，自动发现、懒加载、关键词 + 语义匹配 |
@@ -1281,26 +1281,81 @@ Emcoder 的 AI 对话基于 **Agent Loop** 模式，类似自主决策循环：
 最终回答 → 用户
 ```
 
-### 9.2 全部 14 个工具
+### 9.2 工具系统架构
 
-| 工具名 | 类别 | 风险级别 | 说明 |
-|--------|------|---------|------|
-| `search_knowledge` | KNOWLEDGE | LOW | 在 RAG 知识库中检索嵌入式开发知识 |
-| `generate_code` | CODE | LOW | 调用 LLM 生成嵌入式 C 代码 |
-| `read_file` | FILE | LOW | 读取工作区文件（沙箱 + 5MB 上限） |
-| `write_file` | FILE | MEDIUM | 创建或覆写文件（沙箱 + 10MB 上限） |
-| `edit_file` | FILE | MEDIUM | 查找替换修改文件部分内容 |
-| `scan_workspace` | WORKSPACE | LOW | 扫描工作区目录结构（最多 200 个文件） |
-| `search_in_project` | WORKSPACE | LOW | 在工程文件中搜索文本内容 |
-| `create_project` | PROJECT | MEDIUM | 创建 STM32 / ESP32 工程 |
-| `build_project` | PROJECT | MEDIUM | 编译构建工程（debug / release） |
-| `detect_platform` | PROJECT | LOW | 根据上下文自动检测目标平台 |
-| `run_command` | TERMINAL | **CRITICAL** | 执行终端命令（需用户确认） |
-| `flash_firmware` | HARDWARE | **CRITICAL** | 烧录固件到硬件（需用户确认） |
-| `get_peripheral_info` | HARDWARE | LOW | 查询外设配置信息 |
-| `request_confirmation` | WORKSPACE | LOW | 向用户发起确认请求 |
+工具按 **来源** 分为两大类，通过 `ToolSource` 枚举区分：
 
-#### 工具参数详情
+| 来源 | 说明 | 数量 |
+|------|------|------|
+| `BUILTIN` | 内置工具 — 本地执行，直接操作文件/硬件/工程 | 19 |
+| `LLM` | LLM 提供商工具 — 委托远端 LLM 执行（搜索、代码执行等） | 8 |
+
+工具定义位于 `app/services/agent/tools/` 包，按功能分模块：
+
+```
+tools/
+├── base.py              类型定义 (ToolDefinition, ToolParam, RiskLevel, ToolCategory, ToolSource)
+├── registry.py          ToolRegistry 类 + tool_registry 单例
+├── _helpers.py          共用工具函数
+├── __init__.py          统一入口 + register_all_tools()
+├── builtin/             内置工具 (10 个模块, 19 个工具)
+│   ├── knowledge.py       知识检索 & 代码生成
+│   ├── file_ops.py        文件读写编辑
+│   ├── workspace.py       工作区扫描 & 搜索
+│   ├── project.py         工程创建/构建/检测
+│   ├── terminal.py        终端命令
+│   ├── hardware.py        烧录 & 外设
+│   ├── serial.py          串口监控 & 日志
+│   ├── debug.py           硬件检测 & 调试控制
+│   ├── emulation.py       QEMU 仿真控制
+│   └── interaction.py     用户确认
+└── llm/                 LLM 提供商工具 (4 个模块, 8 个工具)
+    ├── openai.py          搜索 / 文件搜索 / 代码执行 / 图像生成
+    ├── qwen.py            知识库检索 / 联网搜索
+    ├── deepseek.py        联网搜索
+    └── anthropic.py       电脑操作
+```
+
+### 9.3 内置工具（19 个）
+
+| 工具名 | 模块 | 类别 | 风险级别 | 说明 |
+|--------|------|------|---------|------|
+| `search_knowledge` | knowledge | KNOWLEDGE | LOW | 在 RAG 知识库中检索嵌入式开发知识 |
+| `generate_code` | knowledge | CODE | LOW | 调用 LLM 生成嵌入式 C 代码 |
+| `read_file` | file_ops | FILE | LOW | 读取工作区文件（沙箱 + 5MB 上限） |
+| `write_file` | file_ops | FILE | MEDIUM | 创建或覆写文件（沙箱 + 10MB 上限） |
+| `edit_file` | file_ops | FILE | MEDIUM | 查找替换修改文件部分内容 |
+| `scan_workspace` | workspace | WORKSPACE | LOW | 扫描工作区目录结构（最多 200 个文件） |
+| `search_in_project` | workspace | WORKSPACE | LOW | 在工程文件中搜索文本内容 |
+| `create_project` | project | PROJECT | MEDIUM | 创建 STM32 / ESP32 工程 |
+| `build_project` | project | PROJECT | MEDIUM | 编译构建工程（debug / release） |
+| `detect_platform` | project | PROJECT | LOW | 根据上下文自动检测目标平台 |
+| `run_command` | terminal | TERMINAL | **CRITICAL** | 执行终端命令（需用户确认） |
+| `flash_firmware` | hardware | HARDWARE | **CRITICAL** | 烧录固件到硬件（需用户确认） |
+| `get_peripheral_info` | hardware | HARDWARE | LOW | 查询外设配置信息 |
+| `serial_monitor` | serial | HARDWARE | MEDIUM | 串口监控 — 连接 / 停止 / 查看状态 |
+| `get_serial_log` | serial | HARDWARE | LOW | 获取经 Filter+Sampler 处理后的串口日志 |
+| `detect_hardware` | debug | HARDWARE | LOW | 自动检测串口、调试探针、开发板类型 |
+| `debug_control` | debug | HARDWARE | **CRITICAL** | OpenOCD 调试 — 启动/停止/暂停/单步/读寄存器/断点 |
+| `emulation_control` | emulation | HARDWARE | MEDIUM | QEMU 仿真 — 启动/停止/获取输出 |
+| `request_confirmation` | interaction | WORKSPACE | LOW | 向用户发起确认请求 |
+
+### 9.4 LLM 提供商工具（8 个）
+
+LLM 工具名统一加 **提供商前缀**（如 `openai_`、`qwen_`）以避免跨提供商命名冲突。这些工具通过 `LLMService.call_llm_tool()` 委托给对应提供商的 API 执行。
+
+| 工具名 | 提供商 | 类别 | 风险级别 | 说明 |
+|--------|--------|------|---------|------|
+| `openai_web_search` | OpenAI | KNOWLEDGE | LOW | 使用 OpenAI Responses API 联网搜索 |
+| `openai_file_search` | OpenAI | KNOWLEDGE | LOW | 在 OpenAI 向量存储中搜索文件内容 |
+| `openai_code_interpreter` | OpenAI | CODE | MEDIUM | 在 OpenAI 隔离沙箱中执行 Python 代码 |
+| `openai_image_generation` | OpenAI | CODE | LOW | 使用 DALL-E 生成图像 |
+| `qwen_knowledge_retrieve` | Qwen | KNOWLEDGE | LOW | 从百炼知识库检索信息 |
+| `qwen_enable_search` | Qwen | KNOWLEDGE | LOW | 启用通义千问的联网搜索 |
+| `deepseek_enable_search` | DeepSeek | KNOWLEDGE | LOW | 启用 DeepSeek 模型的联网搜索 |
+| `anthropic_computer_use` | Anthropic | TERMINAL | **CRITICAL** | 使用 Claude 控制鼠标键盘进行屏幕交互 |
+
+#### 关键内置工具参数详情
 
 **search_knowledge**：
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
@@ -1332,6 +1387,38 @@ Emcoder 的 AI 对话基于 **Agent Loop** 模式，类似自主决策循环：
 | `port` | str | 否 | — | 串口 |
 | `interface` | str | 否 | `swd` | 接口类型：`swd` / `jtag` / `uart` |
 
+**serial_monitor**：
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+|------|------|------|--------|------|
+| `action` | str | 是 | — | 操作类型：`start` / `stop` / `status` |
+| `port` | str | 否 | — | 串口端口（start 时必填） |
+| `baudrate` | int | 否 | `115200` | 波特率 |
+| `session_id` | str | 否 | — | 会话 ID（stop 时必填） |
+
+**get_serial_log**：
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+|------|------|------|--------|------|
+| `count` | int | 否 | `30` | 返回日志条数（1 ~ 200） |
+| `errors_only` | bool | 否 | `false` | 仅返回 error/critical 级别 |
+
+**debug_control**：
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+|------|------|------|--------|------|
+| `action` | str | 是 | — | 操作：`start` / `stop` / `halt` / `resume` / `step` / `reset` / `read_registers` / `read_memory` / `set_breakpoint` / `remove_breakpoint` / `list_sessions` / `history` |
+| `session_id` | str | 否 | — | 调试会话 ID |
+| `interface_cfg` | str | 否 | `interface/stlink.cfg` | OpenOCD 接口配置文件 |
+| `target_cfg` | str | 否 | `target/stm32f1x.cfg` | OpenOCD 目标芯片配置 |
+| `address` | str | 否 | — | 内存/断点地址（0x...） |
+| `size` | int | 否 | `256` | 读取内存字节数 |
+
+**emulation_control**：
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+|------|------|------|--------|------|
+| `action` | str | 是 | — | 操作：`start` / `stop` / `output` / `list_sessions` |
+| `session_id` | str | 否 | — | 仿真会话 ID |
+| `firmware` | str | 否 | — | 固件 ELF 文件路径（start 需要） |
+| `machine` | str | 否 | `stm32f4-discovery` | QEMU 机器类型 |
+
 **search_in_project**：
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 |------|------|------|--------|------|
@@ -1340,17 +1427,17 @@ Emcoder 的 AI 对话基于 **Agent Loop** 模式，类似自主决策循环：
 | `project_path` | str | 否 | — | 工程路径 |
 | `max_results` | int | 否 | `20` | 最大结果数 |
 
-### 9.3 敏感操作拦截
+### 9.5 敏感操作拦截
 
 以下操作会触发用户确认请求：
 
-1. **风险级别 ≥ CRITICAL** 的工具调用（`run_command`、`flash_firmware`）
+1. **风险级别 ≥ CRITICAL** 的工具调用（`run_command`、`flash_firmware`、`debug_control`、`anthropic_computer_use`）
 2. **终端命令关键词匹配**：`rm -rf`、`flash`、`sudo`、`mkfs`、`dd`、`format`、`reboot`、`shutdown`、`kill`、`chmod 777`、`curl | sh`、`wget | sh`、`erase`
 3. **所有烧录操作**
 
 确认窗口 **300 秒**超时自动拒绝。
 
-### 9.4 上下文管理
+### 9.6 上下文管理
 
 | 参数 | 值 |
 |------|-----|
@@ -1360,7 +1447,7 @@ Emcoder 的 AI 对话基于 **Agent Loop** 模式，类似自主决策循环：
 | 会话 TTL | 4 小时 |
 | 知识缓存 | LRU + TTL，减少重复 RAG 检索 |
 
-### 9.5 错误恢复策略
+### 9.7 错误恢复策略
 
 Agent 执行工具失败时的自动恢复：
 
@@ -1369,7 +1456,7 @@ Agent 执行工具失败时的自动恢复：
 3. **LLM 重规划**：让 AI 重新决策
 4. **放弃**：报告错误给用户
 
-### 9.6 安全特性
+### 9.8 安全特性
 
 - **速率限制**：Agent 调用 30 次/分钟，工具调用 100 次/分钟
 - **并发限制**：最多 5 个并发 Agent（`asyncio.Semaphore`）
@@ -1378,13 +1465,12 @@ Agent 执行工具失败时的自动恢复：
 - **敏感命令拦截**：`SensitiveGuard` 模块
 - **审计日志**：环形缓冲，最大 10,000 条
 
-### 9.7 Agent 子模块
+### 9.9 Agent 子模块
 
 | 模块 | 文件 | 职责 |
 |------|------|------|
 | 核心循环 | `agent_loop.py` | Think → Act → Observe 循环 |
-| 工具注册 | `tool_registry.py` | ToolDefinition / RiskLevel / ToolCategory |
-| 工具定义 | `tools_def.py` | 14 个工具的 handler 函数 + 注册 |
+| 工具系统 | `tools/` | 模块化工具包 — 类型、注册中心、19 内置 + 8 LLM 工具 |
 | 敏感守卫 | `sensitive_guard.py` | 命令拦截 + 确认生成 |
 | 上下文管理 | `context_manager.py` | Token 窗口 + 自动摘要 |
 | 工作区管理 | `workspace_manager.py` | 路径注入 + 沙箱 |
@@ -1492,7 +1578,7 @@ app/skills/
 单例模式，负责 Skill 发现与加载：
 
 ```python
-from app.skills import skill_manager
+from app.components.skills import skill_manager
 
 # 加载所有 Skill（读取 meta.json，不加载 handler）
 skill_manager.load_all_skills()
@@ -1515,7 +1601,7 @@ mcus = skill_manager.get_skills_by_type("mcu")
 负责将用户输入自动匹配到正确的 Skill：
 
 ```python
-from app.skills import skill_matcher
+from app.components.skills import skill_matcher
 
 # 关键词匹配
 results = skill_matcher.match("帮我配置 STM32F407 的 GPIO")
@@ -2276,7 +2362,12 @@ async def test_agent_chat():
   ----------------------------------------------------------
   Services
     AgentLoop        — AI Agent 核心循环
-      ToolRegistry   — 工具注册中心
+      tools/         — 模块化工具包
+        base.py      — 类型定义 (ToolDefinition, RiskLevel, ToolCategory, ToolSource)
+        registry.py  — ToolRegistry 工具注册中心
+        _helpers.py  — 共用工具函数
+        builtin/     — 19 个内置工具 (10 个模块)
+        llm/         — 8 个 LLM 提供商工具 (4 个模块)
       SensitiveGuard — 敏感操作守卫
       ContextManager — 对话上下文 (Token 窗口)
       WorkspaceManager — 工作区路径注入
@@ -2332,7 +2423,7 @@ async def test_agent_chat():
 
 ### 18.2 数据流
 
-1. **AI 对话**：用户消息 → AgentLoop → LLM 决策 → ToolRegistry → handler 执行 → 观察结果 → LLM 继续 → 最终回答
+1. **AI 对话**：用户消息 → AgentLoop → LLM 决策 → tools/registry → handler 执行 → 观察结果 → LLM 继续 → 最终回答
 2. **知识检索**：Agent `search_knowledge` → KnowledgeCache → RAGService → FAISS 搜索 → 结果缓存
 3. **硬件捕获**：DataCapture → CapturedData → AIDataFilter → SmartSampler → LLMContext → 分析引擎 → 诊断结果
 4. **代码编辑**：Agent `edit_file`/`write_file` → EditProposal → SSE 推送 → 前端 Accept/Reject → 磁盘写入
@@ -2550,7 +2641,35 @@ EmcoderCLI/
     │   │   ├── schemas.py      API 数据模型
     │   │   └── edit_protocol.py  编辑协议模型
     │   ├── services/
-    │   │   ├── agent/          Agent 系统 (10 个模块)
+    │   │   ├── agent/          Agent 系统
+    │   │   │   ├── agent_loop.py       核心循环
+    │   │   │   ├── sensitive_guard.py   敏感操作守卫
+    │   │   │   ├── context_manager.py   上下文管理
+    │   │   │   ├── workspace_manager.py 工作区管理
+    │   │   │   ├── knowledge_cache.py   知识缓存
+    │   │   │   ├── structured_output.py 输出解析
+    │   │   │   ├── status_reporter.py   SSE 推送
+    │   │   │   ├── error_recovery.py    错误恢复
+    │   │   │   └── tools/              工具系统包
+    │   │   │       ├── base.py           类型定义 (ToolDefinition, RiskLevel...)
+    │   │   │       ├── registry.py       ToolRegistry + 单例
+    │   │   │       ├── _helpers.py       共用工具函数
+    │   │   │       ├── builtin/          内置工具 (10 模块, 19 工具)
+    │   │   │       │   ├── knowledge.py    知识检索 & 代码生成
+    │   │   │       │   ├── file_ops.py     读/写/编辑文件
+    │   │   │       │   ├── workspace.py    扫描 & 搜索
+    │   │   │       │   ├── project.py      创建/构建/检测
+    │   │   │       │   ├── terminal.py     终端命令
+    │   │   │       │   ├── hardware.py     烧录 & 外设
+    │   │   │       │   ├── serial.py       串口监控 & 日志
+    │   │   │       │   ├── debug.py        硬件检测 & 调试
+    │   │   │       │   ├── emulation.py    QEMU 仿真
+    │   │   │       │   └── interaction.py  用户确认
+    │   │   │       └── llm/              LLM 提供商工具 (4 模块, 8 工具)
+    │   │   │           ├── openai.py       搜索/文件/代码/图像
+    │   │   │           ├── qwen.py         知识库/搜索
+    │   │   │           ├── deepseek.py     搜索
+    │   │   │           └── anthropic.py    电脑操作
     │   │   ├── llm/            LLM 调用
     │   │   ├── rag/            RAG 知识库
     │   │   ├── project/        工程管理
@@ -2647,9 +2766,10 @@ curl http://127.0.0.1:8000/api/v1/agent/tools
 
 | 版本 | 日期 | 重大变更 |
 |------|------|---------|
-| v2.0.0 | 2026-02 | Skill 插件系统、编辑协议、Agent 14 工具、TUI 重构 |
+| v2.1.0 | 2026-02-20 | 工具系统模块化重构：拆分为 `tools/` 包（20 个文件），新增 ToolSource 枚举、LLM 提供商工具（8 个）、`_helpers.py` 共用函数，工具总数 19→27 |
+| v2.0.0 | 2026-02 | Skill 插件系统、编辑协议、Agent 工具体系、TUI 重构 |
 | v1.0.0 | — | 初始版本 |
 
 ---
 
-*Emcoder CLI v2.0.0 — Embedded MCU Intelligent Development Sidecar Engine*
+*Emcoder CLI v2.1.0 — Embedded MCU Intelligent Development Sidecar Engine*
